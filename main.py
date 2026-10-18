@@ -13,51 +13,69 @@ app.add_middleware(CORSMiddleware,
                    )
 
 
-tasks : list[Task]= []
-books: list[Book] = []
+tasks : list[TaskSchema] = []
 
-class Book(BaseModel):
 
-    title: str
-
-class BookCreate(BaseModel):
-
-    title: str
-
-class Task(BaseModel):
+class Category(BaseModel):
 
     id: str
     title: str
     completed: bool
 
-class CreateTask(BaseModel):
+
+class TaskSchema(BaseModel):
+
+    id: str
+    title: str
+    completed: bool
+
+class TaskCreateSchema(BaseModel):
 
     title: str
+
+class TaskUpdateSchema(BaseModel):
+
+    title: str | None = None
+    completed: bool | None = None
+
+
 
 
 @app.get('/')
 def read_root():
     return {'massege':'Hello Pidor!'}
 
-@app.get('/tasks',response_model= list[Task])
+@app.get('/tasks',response_model= list[TaskSchema])
 def read_tasks():
     return tasks
 
-@app.post('/tasks',response_model=Task)
-def create_task(payload: CreateTask):
-    task = Task(id=str(uuid4()),title=payload.title,completed=False)
+@app.post('/tasks',response_model=TaskSchema, status_code=status.HTTP_201_CREATED)
+def create_task(payload: TaskCreateSchema):
+    task = TaskSchema(id=str(uuid4()),title=payload.title,completed=False)
     tasks.append(task)
     return task
 
-@app.get('/books', response_model= list[Book])
-def get_book():
-    return books
+@app.patch('/tasks/{task_id}',response_model=TaskSchema)
+def update_task(task_id: str ,payload: TaskUpdateSchema):
+    for task in tasks:
+        if task_id == task.id:
+            if payload.title is not None:
+                task.title = payload.title
+            if payload.completed is not None:
+                task.completed = payload.completed
 
-@app.post('/books', response_model= Book)
-def create_book(payload: BookCreate):
-    book = Book(title=payload.title)
-    books.append(book)
-    return book
+            return task
+
+@app.delete('/tasks/{task_id}')
+def delete_task(task_id: str):
+    for task in tasks:
+        if task_id == task.id:
+            tasks.remove(task)
+            return
+
+
+
+
 
 
 
