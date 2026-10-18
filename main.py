@@ -1,4 +1,5 @@
 from uuid import uuid4
+from fastapi import HTTPException
 
 
 from fastapi import FastAPI , status
@@ -14,13 +15,21 @@ app.add_middleware(CORSMiddleware,
 
 
 tasks : list[TaskSchema] = []
+categories: list[CategorySchema] = []
 
 
-class Category(BaseModel):
+class CategorySchema(BaseModel):
 
     id: str
-    title: str
-    completed: bool
+    name: str
+
+class CategoryCreateSchema(BaseModel):
+
+    name: str
+
+class CategoryUpdateSchema(BaseModel):
+
+    name: str | None = None
 
 
 class TaskSchema(BaseModel):
@@ -65,6 +74,7 @@ def update_task(task_id: str ,payload: TaskUpdateSchema):
                 task.completed = payload.completed
 
             return task
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Задача не найдена")
 
 @app.delete('/tasks/{task_id}')
 def delete_task(task_id: str):
@@ -72,6 +82,38 @@ def delete_task(task_id: str):
         if task_id == task.id:
             tasks.remove(task)
             return
+
+
+@app.get('/categories', response_model=list[CategorySchema])
+def read_categories():
+    return categories
+
+@app.post('/categories',response_model=CategorySchema)
+def create_task(payload: CategoryCreateSchema):
+    new_category = CategorySchema(id=str(uuid4()),name=payload.name)
+    categories.append(new_category)
+    return new_category
+
+@app.patch('/categories/{category_id}',response_model=CategorySchema)
+def update_category(category_id: str , payload: CategoryUpdateSchema):
+    for category in categories:
+        if category_id == category.id:
+            if payload.name is not None:
+                category.name = payload.name
+            return category
+
+
+@app.delete('/categories/{category_id}')
+def delete_category(category_id : str):
+    for category in categories:
+        if category_id == category.id:
+            categories.remove(category)
+        return 
+
+
+
+
+
 
 
 
