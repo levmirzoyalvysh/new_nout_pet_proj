@@ -22,9 +22,8 @@ class CategoryService:
         if category_for_update is None:
             raise CategoryNotFound('ne naidena')
 
-        data = category_update.model_dump(exclude_unset=True)
-        for field, value in data.items():
-            setattr(category_for_update, field, value)
+        if category_update.name is not None:
+            category_for_update.name = category_update.name
 
         self.db.commit()
         self.db.refresh(category_for_update)
