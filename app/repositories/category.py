@@ -1,6 +1,8 @@
-from app.models.category import CategoryORM
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from app.models.category import CategoryORM
+
 
 class CategoryRepository:
     def __init__(self, db: Session):
@@ -20,4 +22,3 @@ class CategoryRepository:
 
     def delete_category(self, category: CategoryORM) -> None:
         self.db.delete(category)
-    

@@ -1,5 +1,3 @@
-
-
 import logging
 
 
@@ -12,4 +10,3 @@ def configure_logging():
         )
 
     logging.getLogger("app").setLevel(logging.INFO)
-    

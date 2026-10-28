@@ -1,7 +1,11 @@
-from app.schemas.category import CategorySchema, CategoryCreateSchema , CategoryUpdateSchema
-from app.repositories.category import CategoryRepository
 from sqlalchemy.orm import Session
 
+from app.repositories.category import CategoryRepository
+from app.schemas.category import (
+    CategoryCreateSchema,
+    CategorySchema,
+    CategoryUpdateSchema,
+)
 
 
 class CategoryNotFound(Exception):
@@ -18,9 +22,11 @@ class CategoryService:
         return [CategorySchema.model_validate(c) for c in categories_orm]
 
     def update_category(self, category_id, category_update: CategoryUpdateSchema):
-        category_for_update = self.category_repository.get_by_id(category_id=category_id)
+        category_for_update = self.category_repository.get_by_id(
+            category_id=category_id
+        )
         if category_for_update is None:
-            raise CategoryNotFound('ne naidena')
+            raise CategoryNotFound("ne naidena")
 
         if category_update.name is not None:
             category_for_update.name = category_update.name
@@ -30,14 +36,18 @@ class CategoryService:
         return CategorySchema.model_validate(category_for_update)
 
     def create_category(self, category_create: CategoryCreateSchema) -> CategorySchema:
-        category_orm_cr = self.category_repository.create_category(name=category_create.name)
+        category_orm_cr = self.category_repository.create_category(
+            name=category_create.name
+        )
         self.db.commit()
         self.db.refresh(category_orm_cr)
         return CategorySchema.model_validate(category_orm_cr)
 
     def delete_category(self, category_id):
-        category_for_delete = self.category_repository.get_by_id(category_id=category_id)
+        category_for_delete = self.category_repository.get_by_id(
+            category_id=category_id
+        )
         if category_for_delete is None:
-            raise CategoryNotFound('ne naidena')
+            raise CategoryNotFound("ne naidena")
         self.category_repository.delete_category(category_for_delete)
         self.db.commit()

@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict
+
 
 class TaskSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -8,11 +8,11 @@ class TaskSchema(BaseModel):
     title: str
     completed: bool
 
-class TaskCreateSchema(BaseModel):
 
+class TaskCreateSchema(BaseModel):
     title: str
 
-class TaskUpdateSchema(BaseModel):
 
+class TaskUpdateSchema(BaseModel):
     title: str | None = None
     completed: bool | None = None

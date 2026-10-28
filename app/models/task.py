@@ -1,10 +1,10 @@
+from sqlalchemy.orm import Mapped, mapped_column
 
-from sqlalchemy.orm import mapped_column, Mapped
 from app.models.base import Base
 
 
 class TaskORM(Base):
-    __tablename__ = 'tasks'
+    __tablename__ = "tasks"
 
-    title: Mapped[str] 
+    title: Mapped[str]
     completed: Mapped[bool] = mapped_column(default=False)
