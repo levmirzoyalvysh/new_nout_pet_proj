@@ -8,3 +8,4 @@ class CategoryORM(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid4()))
     name: Mapped[str] = mapped_column(nullable=False)
+    
